@@ -1,3 +1,3 @@
 # scala-todo
 
-https://travis-ci.org/nacam403/scala-todo.svg?branch=master
+![Travis CI status](https://travis-ci.org/nacam403/scala-todo.svg?branch=master)
