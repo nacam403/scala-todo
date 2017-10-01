@@ -18,6 +18,6 @@ object JsonUtil {
     (JsPath \ "id").readNullable[Long] and
       (JsPath \ "description").read[String] and
       (JsPath \ "done").readWithDefault[Boolean](false)
-    )(Todo.apply _)
+    ) (Todo.apply _)
 
 }

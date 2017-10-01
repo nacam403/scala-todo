@@ -12,7 +12,7 @@ class DatabaseLifecycle @Inject()(appLifecycle: ApplicationLifecycle) {
 
   DatabaseManager.migrate()
 
-  appLifecycle.addStopHook {() =>
+  appLifecycle.addStopHook { () =>
     DatabaseManager.close()
     Future.successful(())
   }
