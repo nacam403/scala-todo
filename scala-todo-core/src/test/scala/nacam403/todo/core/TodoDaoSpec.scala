@@ -9,20 +9,13 @@ class TodoDaoSpec extends AsyncFunSpec with BeforeAndAfterAll with Matchers {
   override def afterAll() = DatabaseManager.close()
 
   describe("list()") {
-    describe("with empty table") {
-      it("should return empty seq") {
-        TodoTable.list.map(_ shouldBe 'empty)
-      }
-    }
-
-    describe("with non empty table") {
-      it("should return non empty seq") {
-        for {
-          _ <- TodoTable.create("Todo 1")
-          _ <- TodoTable.create("Todo 2")
-          seq <- TodoTable.list
-        } yield seq should have length 2
-      }
+    it("should return seq") {
+      for {
+        seqBefore <- TodoTable.list
+        _ <- TodoTable.create("Todo 1")
+        _ <- TodoTable.create("Todo 2")
+        seq <- TodoTable.list
+      } yield (seq.length - seqBefore.length) shouldBe 2
     }
   }
 
