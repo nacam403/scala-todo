@@ -1,8 +1,8 @@
 package utils
 
 import nacam403.todo.core.Todo
-import play.api.libs.json._
 import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
 object JsonUtil {
 
