@@ -1,18 +1,12 @@
 package nacam403.todo.core
 
 import org.scalatest.{AsyncFunSpec, BeforeAndAfterAll, Matchers}
-import slick.jdbc.H2Profile.api._
-
-import scala.concurrent.Await
-import scala.concurrent.duration.Duration
 
 class TodoDaoSpec extends AsyncFunSpec with BeforeAndAfterAll with Matchers {
 
-  val db = TodoConfig.db
+  override def beforeAll() = DatabaseManager.migrate()
 
-  override def beforeAll() = Await.result(db.run(TodoTable.schema.create), Duration.Inf)
-
-  override def afterAll() = db.close()
+  override def afterAll() = DatabaseManager.close()
 
   describe("list()") {
     describe("with empty table") {

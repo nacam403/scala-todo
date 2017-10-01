@@ -14,7 +14,7 @@ class TodoTable(tag: Tag) extends Table[Todo](tag, "TODOS") {
 
 object TodoTable extends TableQuery(new TodoTable(_)) with TodoDao {
 
-  private val db = TodoConfig.db
+  private val db = DatabaseManager.db
 
   override def list = db.run(this.result)
 
