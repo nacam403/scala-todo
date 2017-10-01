@@ -3,7 +3,7 @@ package controllers
 import nacam403.todo.core.{Todo, TodoDao}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
-import org.scalatest.FunSpec
+import org.scalatest.{FunSpec, Matchers}
 import org.scalatest.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.test.Helpers._
@@ -13,7 +13,7 @@ import utils.JsonUtil._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class TodoControllerSpec extends FunSpec with MockitoSugar {
+class TodoControllerSpec extends FunSpec with MockitoSugar with Matchers {
 
   val mockDao = mock[TodoDao]
 
@@ -25,18 +25,18 @@ class TodoControllerSpec extends FunSpec with MockitoSugar {
 
       val request = FakeRequest().withJsonBody(Json.parse("""{"description":"new todo"}"""))
       val resultFuture = controller.create(request)
-      assert(status(resultFuture) == OK)
+      status(resultFuture) shouldBe OK
       val json = contentAsJson(resultFuture)
-      assert((json \ "id").as[Long] == 1)
+      (json \ "id").as[Long] shouldBe 1
     }
 
     it("should BadRequest response with illegal create request") {
       val resultFuture = controller.create(FakeRequest())
-      assert(status(resultFuture) == BAD_REQUEST)
+      status(resultFuture) shouldBe BAD_REQUEST
 
       val illegalJsonRequest = FakeRequest().withJsonBody(Json.parse("{}"))
       val resultFutureWithIllegalJson = controller.create(illegalJsonRequest)
-      assert(status(resultFutureWithIllegalJson) == BAD_REQUEST)
+      status(resultFutureWithIllegalJson) shouldBe BAD_REQUEST
     }
 
     it("should return todo list") {
@@ -48,9 +48,9 @@ class TodoControllerSpec extends FunSpec with MockitoSugar {
       })
 
       val resultFuture = controller.list(FakeRequest())
-      assert(status(resultFuture) == OK)
+      status(resultFuture) shouldBe OK
       val json = contentAsJson(resultFuture)
-      assert(json.as[Seq[Todo]].length == 2)
+      json.as[Seq[Todo]] should have length 2
     }
 
     it("should return existence todo") {
@@ -59,14 +59,14 @@ class TodoControllerSpec extends FunSpec with MockitoSugar {
       })
 
       val resultFuture = controller.get(1)(FakeRequest())
-      assert(status(resultFuture) == OK)
+      status(resultFuture) shouldBe OK
     }
 
     it("should return NotFound with non existence todo ID for get") {
       when(mockDao.get(-1)).thenReturn(Future(None))
 
       val resultFuture = controller.get(-1)(FakeRequest())
-      assert(status(resultFuture) == NOT_FOUND)
+      status(resultFuture) shouldBe NOT_FOUND
     }
 
     it("should update existence todo") {
@@ -74,28 +74,28 @@ class TodoControllerSpec extends FunSpec with MockitoSugar {
 
       val jsonRequest = FakeRequest().withJsonBody(Json.parse("""{"description":"updated todo", "done":true}"""))
       val resultFuture = controller.update(1)(jsonRequest)
-      assert(status(resultFuture) == OK)
+      status(resultFuture) shouldBe OK
     }
 
     it("should return NotFound with non existence todo ID for update") {
       when(mockDao.update(ArgumentMatchers.any())).thenReturn(Future(0))
       val jsonRequest = FakeRequest().withJsonBody(Json.parse("""{"description":"updated todo", "done":true}"""))
       val resultFuture = controller.update(-1)(jsonRequest)
-      assert(status(resultFuture) == NOT_FOUND)
+      status(resultFuture) shouldBe NOT_FOUND
     }
 
     it("should delete existence todo") {
       when(mockDao.delete(1)).thenReturn(Future(1))
 
       val resultFuture = controller.delete(1)(FakeRequest())
-      assert(status(resultFuture) == OK)
+      status(resultFuture) shouldBe OK
     }
 
     it("should return NotFound with non existence todo ID for delete") {
       when(mockDao.delete(-1)).thenReturn(Future(0))
 
       val resultFuture = controller.delete(-1)(FakeRequest())
-      assert(status(resultFuture) == NOT_FOUND)
+      status(resultFuture) shouldBe NOT_FOUND
     }
 
   }

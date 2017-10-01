@@ -1,30 +1,30 @@
 package utils
 
 import nacam403.todo.core.Todo
-import org.scalatest.FunSpec
+import org.scalatest.{FunSpec, Matchers}
 import play.api.libs.json.Json
 import utils.JsonUtil._
 
-class JsonUtilSpec extends FunSpec {
+class JsonUtilSpec extends FunSpec with Matchers {
 
   describe("JsonUtil") {
     it("should convert todo to JSON") {
       val json = Json.toJson(new Todo(1, "Todo", true))
-      assert((json \ "id").as[Long] == 1)
-      assert((json \ "description").as[String] == "Todo")
-      assert((json \ "done").as[Boolean] == true)
+      (json \ "id").as[Long] shouldBe 1
+      (json \ "description").as[String] shouldBe "Todo"
+      (json \ "done").as[Boolean] shouldBe true
     }
 
     it("should convert JSON to todo") {
       val todo = new Todo(1, "Todo", true)
       val json = Json.toJson(todo)
-      assert(todo == json.as[Todo])
+      json.as[Todo] shouldBe todo
     }
 
     it("should convert JSON with only description to todo") {
       val todo = new Todo(None, "Todo")
       val json = Json.toJson(todo)
-      assert(todo == json.as[Todo])
+      json.as[Todo] shouldBe todo
     }
   }
 

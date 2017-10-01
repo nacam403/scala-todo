@@ -1,12 +1,12 @@
 package nacam403.todo.core
 
-import org.scalatest.{AsyncFunSpec, BeforeAndAfterAll}
+import org.scalatest.{AsyncFunSpec, BeforeAndAfterAll, Matchers}
 import slick.jdbc.H2Profile.api._
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
-class TodoDaoSpec extends AsyncFunSpec with BeforeAndAfterAll {
+class TodoDaoSpec extends AsyncFunSpec with BeforeAndAfterAll with Matchers {
 
   val db = TodoConfig.db
 
@@ -17,7 +17,7 @@ class TodoDaoSpec extends AsyncFunSpec with BeforeAndAfterAll {
   describe("list()") {
     describe("with empty table") {
       it("should return empty seq") {
-        TodoTable.list.map(seq => assert(seq.isEmpty))
+        TodoTable.list.map(_ shouldBe 'empty)
       }
     }
 
@@ -27,7 +27,7 @@ class TodoDaoSpec extends AsyncFunSpec with BeforeAndAfterAll {
           _ <- TodoTable.create("Todo 1")
           _ <- TodoTable.create("Todo 2")
           seq <- TodoTable.list
-        } yield assert(seq.length == 2)
+        } yield seq should have length 2
       }
     }
   }
@@ -37,7 +37,7 @@ class TodoDaoSpec extends AsyncFunSpec with BeforeAndAfterAll {
       for {
         id1 <- TodoTable.create("Todo 1")
         id2 <- TodoTable.create("Todo 2")
-      } yield assert(id2 - id1 == 1)
+      } yield (id2 - id1) shouldBe 1
     }
   }
 
@@ -47,13 +47,13 @@ class TodoDaoSpec extends AsyncFunSpec with BeforeAndAfterAll {
         for {
           id <- TodoTable.create("Todo")
           todoOption <- TodoTable.get(id)
-        } yield assert(todoOption.get == new Todo(id, "Todo", false))
+        } yield todoOption shouldBe Some(new Todo(id, "Todo", false))
       }
     }
 
     describe("with non existence ID") {
       it("should return None") {
-        TodoTable.get(-1).map(todoOption => assert(todoOption.isEmpty))
+        TodoTable.get(-1).map(_ shouldBe 'isEmpty)
       }
     }
   }
@@ -66,15 +66,15 @@ class TodoDaoSpec extends AsyncFunSpec with BeforeAndAfterAll {
           updatedRowCount <- TodoTable.update(new Todo(id, "New Todo", true))
           newTodoOption <- TodoTable.get(id)
         } yield {
-          assert(updatedRowCount == 1)
-          assert(newTodoOption.get == new Todo(id, "New Todo", true))
+          updatedRowCount shouldBe 1
+          newTodoOption shouldBe Some(new Todo(id, "New Todo", true))
         }
       }
     }
 
     describe("with non existence ID") {
       it("should return 0") {
-        TodoTable.update(Todo(Some(-1), "Todo")).map(updatedRowCount => assert(updatedRowCount == 0))
+        TodoTable.update(Todo(Some(-1), "Todo")).map(_ shouldBe 0)
       }
     }
   }
@@ -87,15 +87,15 @@ class TodoDaoSpec extends AsyncFunSpec with BeforeAndAfterAll {
           deletedRowCount <- TodoTable.delete(id)
           todoOption <- TodoTable.get(id)
         } yield {
-          assert(deletedRowCount == 1)
-          assert(todoOption.isEmpty)
+          deletedRowCount shouldBe 1
+          todoOption shouldBe None
         }
       }
     }
 
     describe("with non existence ID") {
       it("should return 0") {
-        TodoTable.delete(-1).map(deletedRowCount => assert(deletedRowCount == 0))
+        TodoTable.delete(-1).map(_ shouldBe 0)
       }
     }
   }
