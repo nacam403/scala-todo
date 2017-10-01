@@ -10,7 +10,7 @@ class TodoDaoSpec extends AsyncFunSpec with BeforeAndAfterAll with Matchers {
 
   private val dao = TodoDaoImpl
 
-  describe("list()") {
+  describe("list") {
     it("should return seq") {
       for {
         seqBefore <- dao.list
@@ -21,7 +21,7 @@ class TodoDaoSpec extends AsyncFunSpec with BeforeAndAfterAll with Matchers {
     }
   }
 
-  describe("create()") {
+  describe("create") {
     it("should return auto increment ID") {
       for {
         id1 <- dao.create("Todo 1")
@@ -30,7 +30,7 @@ class TodoDaoSpec extends AsyncFunSpec with BeforeAndAfterAll with Matchers {
     }
   }
 
-  describe("get()") {
+  describe("get") {
     describe("with existence ID") {
       it("should return Some[Todo]") {
         for {
@@ -47,7 +47,7 @@ class TodoDaoSpec extends AsyncFunSpec with BeforeAndAfterAll with Matchers {
     }
   }
 
-  describe("update()") {
+  describe("update") {
     describe("with existence ID") {
       it("should update todo") {
         for {
@@ -68,7 +68,7 @@ class TodoDaoSpec extends AsyncFunSpec with BeforeAndAfterAll with Matchers {
     }
   }
 
-  describe("delete()") {
+  describe("delete") {
     describe("with existence ID") {
       it("should delete todo") {
         for {

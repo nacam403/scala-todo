@@ -19,7 +19,7 @@ class TodoControllerSpec extends FunSpec with MockitoSugar with Matchers {
 
   val controller = new TodoController(Helpers.stubControllerComponents(), mockDao)
 
-  describe("TodoController") {
+  describe("create") {
     it("should create new todo") {
       when(mockDao.create("new todo")) thenReturn Future(1L)
       val request = FakeRequest().withJsonBody(Json.parse("""{"description":"new todo"}"""))
@@ -37,7 +37,9 @@ class TodoControllerSpec extends FunSpec with MockitoSugar with Matchers {
       val resultFutureWithIllegalJson = controller.create(illegalJsonRequest)
       status(resultFutureWithIllegalJson) shouldBe BAD_REQUEST
     }
+  }
 
+  describe("list") {
     it("should return todo list") {
       when(mockDao.list) thenReturn Future {
         Seq(
@@ -50,49 +52,53 @@ class TodoControllerSpec extends FunSpec with MockitoSugar with Matchers {
       val json = contentAsJson(resultFuture)
       json.as[Seq[Todo]] should have length 2
     }
+  }
 
+  describe("get") {
     it("should return existence todo") {
-      when(mockDao.get(1)) thenReturn Future {
-        Some(new Todo(1, "Todo 1", true))
-      }
+      val todo = new Todo(1, "Todo 1", true)
+      when(mockDao.get(1)) thenReturn Future(Some(todo))
       val resultFuture = controller.get(1)(FakeRequest())
       status(resultFuture) shouldBe OK
+      val json = contentAsJson(resultFuture)
+      json.as[Todo] shouldBe todo
     }
 
-    it("should return NotFound with non existence todo ID for get") {
+    it("should return NotFound with non existence todo ID") {
       when(mockDao.get(-1)) thenReturn Future(None)
       val resultFuture = controller.get(-1)(FakeRequest())
       status(resultFuture) shouldBe NOT_FOUND
     }
+  }
 
+  describe("update") {
     it("should update existence todo") {
       when(mockDao.update(new Todo(1, "updated todo", true))) thenReturn Future(1)
-
       val jsonRequest = FakeRequest().withJsonBody(Json.parse("""{"description":"updated todo", "done":true}"""))
       val resultFuture = controller.update(1)(jsonRequest)
       status(resultFuture) shouldBe OK
     }
 
-    it("should return NotFound with non existence todo ID for update") {
+    it("should return NotFound with non existence todo ID") {
       when(mockDao.update(any())) thenReturn Future(0)
       val jsonRequest = FakeRequest().withJsonBody(Json.parse("""{"description":"updated todo", "done":true}"""))
       val resultFuture = controller.update(-1)(jsonRequest)
       status(resultFuture) shouldBe NOT_FOUND
     }
+  }
 
+  describe("delete") {
     it("should delete existence todo") {
       when(mockDao.delete(1)) thenReturn Future(1)
-
       val resultFuture = controller.delete(1)(FakeRequest())
       status(resultFuture) shouldBe OK
     }
 
-    it("should return NotFound with non existence todo ID for delete") {
+    it("should return NotFound with non existence todo ID") {
       when(mockDao.delete(-1)) thenReturn Future(0)
       val resultFuture = controller.delete(-1)(FakeRequest())
       status(resultFuture) shouldBe NOT_FOUND
     }
-
   }
 
 }
