@@ -36,3 +36,15 @@ lazy val rest = (project in file("./scala-todo-rest-api"))
   )
   .dependsOn(core)
   .enablePlugins(PlayScala)
+
+lazy val frontend = (project in file("./scala-todo-frontend"))
+  .settings(commonSettings: _*)
+  .settings(
+    name := "Scala Todo Frontend",
+    libraryDependencies ++= Seq(
+      guice,
+      "org.scalatestplus.play" %% "scalatestplus-play" % "3.0.0" % Test
+    ),
+    unmanagedResourceDirectories in Assets += baseDirectory.value / "frontend" / "dist"
+  )
+  .enablePlugins(PlayScala)
