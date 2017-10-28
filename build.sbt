@@ -20,7 +20,9 @@ lazy val core = (project in file("./scala-todo-core"))
     name := "Scala Todo Core",
     libraryDependencies ++= Seq(
       "com.typesafe.slick" %% "slick" % "3.2.1",
+      "com.typesafe.slick" %% "slick-hikaricp" % "3.2.1",
       "com.h2database" % "h2" % "1.4.194",
+      "org.flywaydb" % "flyway-core" % "4.2.0",
       "org.slf4j" % "slf4j-nop" % "1.7.10" % Test
     )
   )
